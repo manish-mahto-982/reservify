@@ -5,11 +5,13 @@ import jwt from "jsonwebtoken";
 export interface IUser {
   name: string;
   email: string;
+  password?: string;
   avatar: { public_id: string; url: string };
   role: string;
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   getJWTToken(): string;
+  comparePassword(password: string): Promise<boolean>;
 }
 
 const userSchema = new Schema({
@@ -45,14 +47,19 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcryptjs.hash(this.password, 10);
+  if (this.isModified("password")) {
+    this.password = await bcryptjs.hash(this.password, 10);
+  }
+  next();
 });
 
 userSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET as string, {
     expiresIn: process.env.JWT_EXPIRE,
   });
+};
+userSchema.methods.comparePassword = async function (password: string) {
+ return await bcryptjs.compare(password, this.password);
 };
 const User = model<IUser>("User", userSchema);
 

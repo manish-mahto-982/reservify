@@ -7,14 +7,18 @@ const sendToken = (user: IUser, statusCode: number, res: Response) => {
   const options: CookieOptions = {
     expires: new Date(
       Date.now() +
-      parseInt(process.env.COOKIE_EXPIRE as string, 10) * 24 * 60 * 60 * 100
+        parseInt(process.env.COOKIE_EXPIRE as string, 10) * 24 * 60 * 60 * 100
     ),
     httpOnly: true,
   };
+  const userData: IUser = user;
+  //@ts-ignore
+  const { password, ...rest } = userData._doc;
+  //separating the password field before sending
   return res
     .status(statusCode)
-    .cookie("token", token, options)
-    .json({ success: true, user, token });
+    .cookie("auth_token", token, options)
+    .json({ success: true, user: rest, token });
 };
 
 export default sendToken;
