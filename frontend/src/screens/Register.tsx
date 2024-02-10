@@ -38,7 +38,7 @@ function Register({}: Props) {
     console.log("🚀 ~ onSubmit ~ values   ~~~  :", values);
   };
   return (
-    <div className={` flex flex-col items-center justify-center space-y-4`}>
+    <div className={`min-h-[600px] flex flex-col items-center justify-center space-y-4`}>
       <div className="flex flex-col space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
           Create an account
